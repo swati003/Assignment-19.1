@@ -1,0 +1,46 @@
+
+Create the Hbase Table:
+=> create 'customer','details'
+
+Above statement will create employee with to colulmns families :- details.
+
+> put 'cutomer','cusid01','details:ID','Customer01'
+> put 'cutomer','cusid01','details:name','Ankit'
+> put 'cutomer','cusid01','details:location','Vishal Nagar'
+> put 'cutomer','cusid01','details:age','30'
+
+> put 'cutomer','cusid02','details:ID','Customer02'
+> put 'cutomer','cusid02','details:name','Ankita'
+> put 'cutomer','cusid02','details:location','Pimple Saudagar'
+> put 'cutomer','cusid02','details:age','27'
+
+Table for details column family.
+
+create external table 
+customer_hbase
+(
+custid String,name string,location string,age int
+)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+with serdeproperties 
+("hbase.columns.mapping"=":key,details:name,details:location,details:age")
+tblproperties("hbase.table.name"="customer");
+
+SET hive.auto.convert.join=true;
+
+// To Calculate max and min age of customer
+SELECT c.id
+       MAX(CAST(c.age)), 
+       MIN(CAST(c.age))  
+FROM customer_hbase c
+GROUP BY c.id
+ORDER BY c.age asc; 
+
+
+
+
+
+
+
+
+
